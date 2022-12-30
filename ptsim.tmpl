@@ -1,0 +1,374 @@
+--------------------------------------------------------------------------
+
+            +-------------------------+
+            | CS 450                  |
+            | PROJECT: PT SIM         |
+            | DESIGN DOCUMENT         |
+            +-------------------------+
+
+---- GROUP ----
+
+>> Fill in the names and email addresses of your group members.
+
+Aaron King <kingaa@sonoma.edu>
+Gary Singh <singh@sonoma.edu>
+Owen Mastropietro <mastropi@sonoma.edu>
+
+=======
+
+---- PRELIMINARIES ----
+
+>> If you have any preliminary comments on your submission or
+>> bug notes, please give them here.
+
+>> Please cite any offline or online sources you consulted while
+>> preparing your submission, other than man pages, course
+>> text, lecture notes, and course staff.
+https://www.youtube.com/watch?v=qUeud6DvOWI
+
+
+               PAGE TABLE SIMULATOR
+               ====================
+
+---- EXPLORE THE PROBLEM ----
+
+>> A1: Given the following description of a page table:
+>>
+>> 7 8 32
+>> 0 1 0 0
+>> 1 1 4 0
+>> 1 1 5 1
+>> 1 1 2 0
+>>
+>> Translate the following sequence of address requests using the method
+>> described for Part A.
+>>
+>> 0x05
+>> 0x7F
+>> 0x3B
+>> 0x7F
+>> 0x40
+>>
+
+--< Begin A1 Response
+
+0x05 produces DISK
+0x7F produces 0x5f
+0x3B produces 0X9B
+0x7F produces 0x5f
+0x40 produces 0xA0
+
+--< End A1 Response
+
+=======
+
+>> A2: It is ok if your program just reads every row of the input file,
+>> but it is possible to compute how many rows you might expect.
+>> Show a computation to determine how many rows are in the page table
+>> using the first row of the input file shows above: 7 8 32.
+
+--< Begin A2 Response
+
+To calculate the number of entries in the page table we must know two things. 
+We must know the virtual address size and the size of the full page table. The
+first value in the file is 7 which we know is the virtual address size.
+We then take the third value, 32 and we take the log base 2 of 32 to get 5.
+We subtract 7 and 5 to get 2 and then take 2 to the power of whatever answer we
+got from subtracting. In this case we calculate 2^2 and get 4.
+This is the number of page table entries that we should have.
+In this case we do.
+
+--< End A2 Response
+
+
+=======
+
+
+---- DATA STRUCTURES ----
+
+>> A3: Copy here the declaration of each new or changed `struct',
+>> `struct' member, global or static variable, `typedef', or enumeration.
+>> Identify the purpose of each in 2--25 words.
+>> Recall the instructions required at least one data structure.
+
+--< Begin A3 Response
+
+# Class members are further documented in A4 Functions.
+class VirtualAddress:
+    """
+    Maintains a virtual address with its bits for the offset and the bits for
+    the page number used to access a page table for logical to physical address
+    translation when needed.
+    
+    Members:
+    getPageNumber() -> int
+    getOffset() -> str
+    getFullAddress() -> str
+    """
+
+--< End A3 Response
+
+
+=======
+
+---- FUNCTIONS ----
+
+>> A4: Provide a prototype and documentation for each function
+>> you have introduced to support this portion of the project.
+>> Use the Google Style Guide for function documentation.
+>> Recall the instructions required at least two functions
+>> in your project, and these should be reflected in A4 and/or B3.
+
+--< Begin A4 Response
+
+def translate(VA:object, PAGE_TABLE:np.ndarray, PHYSICAL_ADDRESS_SIZE:int) -> str:
+    """
+    This method uses the page table we have constructed to translate a given
+    logical / virtual address into the physical address that it refers to.
+    
+    Parameters:
+    - VA: A VirtualAddress object representing the virtual address to be
+    translated.
+    - PAGE_TABLE: The page table used to translate the given virtual address.
+    - PHYSICAL_ADDRESS_SIZE: The size of the physical address space on this
+    given system.
+
+    Returns:
+    - A string representing the physical address that the given virtual address
+    refers to.
+    """
+
+VirtualAddress :: __init__(self, ADDRESS:str, VIRTUAL_ADDRESS_SIZE:int, PAGE_SIZE:int) -> None:
+    """
+    This method will construct a virtual address which contains an offset in
+    the rightmost bits and a page number in the remaining bits to the left.
+        
+    Parameters:
+    ADDRESS: A binary string, representing the virtual address.
+    VIRTUAL_ADDRESS_SIZE: An integer representing the maximum size of the
+    virtual address space on this given system.
+    OFFSET_BITS: An integer representing the number of virtual address
+    bits used for the offset.
+
+    Returns:
+    None.
+    """
+
+VirtualAddress :: getPageNumber(self) -> int:
+    """
+    This method will cast the binary string representation of the page
+    number to its corresponding decimal integer for indexing into an array
+    based page table.
+        
+    Parameters:
+    None.
+        
+    Returns:
+    An integer representing the index into the page table at a given page
+    number.
+    """
+
+VirtualAddress :: getOffset(self) -> str:
+    """
+    Parameters:
+    None.
+        
+    Returns:
+    The binary string representation of the address's offset.
+    """
+
+VirtualAddress :: getFullAddress(self) -> str:
+    """
+    Parameters:
+    None.
+
+    Returns:
+    The binary string representation of the full virtual address referenced
+    by self.
+    """
+
+--< End A4 Response
+
+
+=======
+
+
+---- ALGORITHMS ----
+
+>> A5: Describe your general strategy for managing bit-wise
+>> transformations of data, and relevant support functions you used
+>> to accomplish this.
+
+--< Begin A5 Response
+
+Using the first line of an input file, we obtain the number of bits required to
+represent addresses in the given system.
+Then we create the table using the remaining lines of the input file so.
+At this point, everything is stored as an integer in the table.
+Thus, looping on user input virtual addresses, we need to convert from the user
+entered hex string or decimal string to the binary representations of the
+virtual address.
+From the binary string representation of the virtual address, we can obtain the
+referenced physical address by taking the first k bits of the virtual address,
+using python's array slicing with [0:k], to determine which page holds the
+desired frame.
+Converting this frame, from its integer representation to its binary
+representation, we can concatenate the virtual address's offset with the frame
+to determine the physical address referenced by a given virtual address.
+
+We used python's bin(), hex() and int() methods for converting between different
+representations of addresses. (i.e. bin(dec_address) = "101010...").
+
+We used math.log to compute the number of bits used in the offset.
+
+We used sys.argv[1] to access the first element from the command line.
+
+We used python's zfill to fill the binary string representation of an addess to 
+the full address size.
+
+--< End A5 Response
+
+
+
+
+               CLOCK REPLACEMENT SIMULATOR
+               ===========================
+
+---- EXPLORE THE PROBLEM ----
+
+>> B1: Given the following description of a page table:
+>>
+>> 7 8 32
+>> 0 1 0 0
+>> 1 1 4 0
+>> 1 1 5 1
+>> 1 1 2 0
+>>
+>> Translate the following sequence of address requests using the method
+>> described for Part B.
+>>
+>> 0x05
+>> 0x7F
+>> 0x3B
+>> 0x7F
+>> 0x40
+>>
+
+--< Begin B1 Response
+
+0x05 produces 0x85
+0x7F produces 0x5f
+0x3B produces 0XBB
+0x7F produces 0x5f
+0x40 produces 0x80
+
+--< End B1 Response
+
+
+=======
+
+
+---- DATA STRUCTURES ----
+
+>> B2: Copy here the declaration of each new or changed `struct',
+>> `struct' member, global or static variable, `typedef', or enumeration.
+>> Identify the purpose of each in 2--25 words.
+>> Do not repeat anything already described in A3.
+
+--< Begin B2 Response
+
+We reused the Virtual Address class's logic.
+
+--< End B2 Response
+
+
+=======
+
+
+---- FUNCTIONS ----
+
+>> B3: Provide a prototype and documentation for each function
+>> you have introduced to support this portion of the project.
+>> Use the Google Style Guide for function documentation.
+>> Do not repeat anything already described in A4.
+
+--< Begin B3 Response
+
+# Note, translate has been changed to call evict instead of just printing DISK.
+evict(reqPage: str, clockQ: list, page_table: np.ndarray):
+    """
+    This method will modify the page table state and clockQ state to reflect an
+    eviction. An eviction takes place when there is no room in the page table to
+    store a physical address and we must replace one of the physical addresses
+    already in memory.
+    
+    Returns:
+    clockQ: State after eviction.  
+    page_table: State after eviction.
+    """
+
+--< End B3 Response
+
+
+---- ALGORITHMS ----
+
+>> B4: Describe (i) the data structure you used to search through the frames
+>> following the clock rotation, and (ii) reason through the number of bits 
+>> you would need if you were using a space-efficient representation 
+>> (in particular, describe how might implement a row of the table in C).
+
+--< Begin B4 Response
+
+i) We implemted the clock algorith using an array treated as a FIFO queue,
+evicting the first element at the queue that does not have its second chance bit
+set.
+There is an implementation in alt_attempted_implementations which contains
+logic for a ClockQueue object. Still implemented as a FIFO-ish queue.
+
+ii) In C, we could probably store each page table entry as a struct.
+Using structs, we could use char's for the elements that are expected to be
+1 or 0. We could use integers for the remaining values. We could then utilize
+struct padding / packing to ensure a more optimal memory layout for the structs.
+
+--< End B4 Response
+
+---- RATIONALE ----
+
+>> B5: Did you need to handle any ambiguous scenarios or corner cases
+>> for the Clock algorithm, left unspecified in the algorithm's
+>> description? For example. how does your program behave when 
+>> there is a page table and no valid entries to evict?
+>> Explain any judgements you used in implementing
+>> unclear or unspecified behavior.
+
+--< Begin B5 Response
+
+If there are no valid entries, determined by an empty queue of valid pages found
+in memory, then we report an error and exit as follows.
+if not clockQ:
+    print("No valid frames to evict.")
+    sys.exit(1)
+
+--< End B5 Response
+
+
+               SURVEY QUESTIONS
+               ================
+
+Answering these questions is optional, but it will help us improve the
+course in future quarters.  Feel free to tell us anything you
+want--these questions are just to spur your thoughts.  You may also
+choose to respond anonymously in the course evaluations at the end of
+the quarter.
+
+>> In your opinion, was this assignment, or any one of the problems
+>> in it, too easy or too hard?  Did it take too long or too little time?
+
+>> Did you find that working on a particular part of the assignment gave
+>> you greater insight into some aspect of OS design?
+
+>> Is there some particular fact or hint we should give students in
+>> future quarters to help them solve the problems?  Conversely, did you
+>> find any of our guidance to be misleading?
+
+>> Any other comments?

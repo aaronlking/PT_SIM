@@ -1,0 +1,7 @@
+Welcome to PT-Sim, the page table simulator
+Using input file tests/PT_C.txt
+DISK
+0x5f
+0x9b
+0x5f
+0xa0

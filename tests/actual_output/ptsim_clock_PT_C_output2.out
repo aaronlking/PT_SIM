@@ -1,0 +1,7 @@
+Welcome to PT-Sim-Clock, the enhanced page table simulator
+Using input file tests/PT_C.txt
+PAGEFAULT 0x85
+0x5f
+PAGEFAULT 0xbb
+0x5f
+PAGEFAULT 0x80
