@@ -34,7 +34,7 @@
 - [Owen Mastropietro](https://github.com/OwenMastropietro)
 
 ## TODO:
-- Would be siqk to have the page table as a dictionary {key:"101", value:[V, P, F, U]}.
+- Have the page table as a dictionary {key:"101", value:[V, P, F, U]}.
 
 ## Gondree's README Content.
 The files `pt-sim.sh` and `pt-sim-clock.sh` are wrapper files you should modify to call your executables.
